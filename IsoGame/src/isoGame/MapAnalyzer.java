@@ -167,7 +167,7 @@ public class MapAnalyzer {
 					int tX = map[y][x].getXpos();
 					int tY = map[y][x].getYpos();
 					
-					//new looped version//NOT WORKING
+					//new looped version...NOT WORKING
 //					int adjX = 32;
 //					int adjY = 32;
 //					makePoints.add(new Point(tX+adjX,tY+adjY));

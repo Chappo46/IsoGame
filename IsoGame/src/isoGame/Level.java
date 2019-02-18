@@ -17,11 +17,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Random;
-
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+/**
+ * In the level class the map is laid out, the characters are added, and the graphics are
+ * painted to the screen.
+ * @author Patrick Murphy
+ *
+ */
 
 public class Level extends DisplayScreen implements ActionListener {
 	
@@ -118,7 +124,7 @@ public class Level extends DisplayScreen implements ActionListener {
 		mapLayer1 = CreateMap.getMapLayer1(levelNum);
 		mapLayer4 = CreateMap.getMapLayer4(levelNum);
 		
-		Integer[] tileCoordinates = squareTile(windowX,windowY,mapLayer1.length);		
+		Integer[] tileCoordinates = createMapCoordinates(windowX,windowY,mapLayer1.length);		
 		setTiles(mapLayer1, tileCoordinates);
 		//set tiles for mapLayer4 use the same coordinates as mapLayer1 for simplicity
 		setTiles(mapLayer4, tileCoordinates);
@@ -127,12 +133,12 @@ public class Level extends DisplayScreen implements ActionListener {
 		
 		bottomMenu = new BottomMenu(screen,player);
 		
-		player = new Characters(screen,mapLayer1[3][3],1,2,mapAnalyzer,this);
+		player = new Characters(screen,mapLayer1[3][3],1,2,mapAnalyzer);
 		this.add(player);
 		characters.add(player);
 		
-//		timer = new Timer(200, this);
-//      timer.start();
+		
+
 
 		//working on key bindings
 //		this.getInputMap().put(KeyStroke.getKeyStroke("w"),
@@ -141,7 +147,11 @@ public class Level extends DisplayScreen implements ActionListener {
 //		UpAction);
 		
         
-        
+        /*
+         * Adds a mouse listener to the whole level and creates a point where the mouse was clicked.
+         * If the mouse click was a left click, it runs the leftMousePressed method.
+         * If the mouse click was a right click, it runs the rightMousePressed method.
+         */
 		this.addMouseListener(new MouseAdapter() {
 		@Override
 		public void mousePressed(MouseEvent e)
@@ -164,13 +174,12 @@ public class Level extends DisplayScreen implements ActionListener {
 	}
 	
 	
-	/*Action when the left mouse button is clicked
-	 * New boolean inArea is set to false
-	 * 
-	 * Loops through the map and sets all tiles adjacent boolean as false
-	 * 
-	 * Res
-	 * 
+	/* Action when the left mouse button is clicked.
+	 * New boolean inArea is set to false.
+	 * Calls resetAdjacentTiles() to reset adjacent tiles on the map.
+	 * Takes the mouse point and uses the mapAnalyzer class to determine which if any tile was clicked.
+	 * Sets clickedTile to the tile that was clicked.
+	 * Trys to select tiles, if clicked tile does not exist it runs deselectAll(). 
 	 */
 	private void leftMousePressed(Point mp)
 	{
@@ -185,12 +194,13 @@ public class Level extends DisplayScreen implements ActionListener {
 		//Loop through map
 		Tile clickedTile = mapAnalyzer.getPointedTile(mp);
 		
-		mapAnalyzer.directionTo(player.getStandingPoint(), mp);
+		//prints the direction from the player to the mouse point.
+//		mapAnalyzer.directionTo(player.getStandingPoint(), mp);
 		
 		try 
 		{
 			setSelectedTile(clickedTile.getRowNumber(),clickedTile.getColumnNumber());
-			mapAnalyzer.setAdjacent(clickedTile,1);
+//			mapAnalyzer.setAdjacent(clickedTile,1);
 		}
 		catch(NullPointerException e)
 		{
@@ -199,24 +209,32 @@ public class Level extends DisplayScreen implements ActionListener {
 		
 	}
 
-	
+	/* Action when the right mouse button is clicked.
+	 * Takes the mouse point and uses the mapAnalyzer class to determine which if any tile was clicked.
+	 * Sets clickedTile to the tile that was clicked.
+	 * 
+	 * the player move function is used to move to mouse point.
+	 */
 	private void rightMousePressed(Point mp)
 	{
 		Tile clickedTile = mapAnalyzer.getPointedTile(mp);
 		dehighlightAll();
-		try 
-		{
-			player.move3(mp);
-		}
-		catch(NullPointerException e)
-		{
-			deselectAll();
-		}
+		player.move3(mp);
+		
+		//will be used for tile selection.
+//		try 
+//		{
+			
+//		}
+//		catch(NullPointerException e)
+//		{
+//			deselectAll();
+//		}
 	}
 
 	
 	/*
-	 * 
+	 * Sets all adjacent tiles to false.
 	 */
 	private void resetAdjacentTiles()
 	{
@@ -230,7 +248,7 @@ public class Level extends DisplayScreen implements ActionListener {
 		}
 	}
 	/*
-	 * deselects all tiles
+	 * Sets all tiles selected to false.
 	 */
 	private void deselectAll()
 	{
@@ -244,7 +262,7 @@ public class Level extends DisplayScreen implements ActionListener {
 	}
 
 	/*
-	 * deselects all tiles
+	 * Sets all tiles highlight to false.
 	 */
 	private void dehighlightAll()
 	{
@@ -257,33 +275,11 @@ public class Level extends DisplayScreen implements ActionListener {
 		}
 	}
 	
-	/**
-	 * takes a point and returns the tile it is in
-	 * 
-	 */
-	public Tile getPointedTile(Point mp)
-	{
-		boolean inArea = false;
-		Tile tileSelected = null;
-		
-		for(int row = 0; row<mapLayer1.length;row++)
-		{	
-				for(int column=0;column<mapLayer1[row].length;column++)
-				{	
-					inArea = mapLayer1[row][column].getClickDiamond().contains(mp.getX(),(mp.getY()));
-					if(inArea == true&&mapLayer1[row][column].isClickable())
-				{
-						tileSelected = mapLayer1[row][column];
-				}
-					inArea = false;
-			}	
-		}
-		return tileSelected;
-	}
 	
-//SET TILE SELECTED
-	
-//	Sets tile selected and also deselects tile if it is currently selected
+	/*
+	 * Set tile to false if it is currently selected.
+	 * Else it sets tile selected to true; 
+	 */	
 //	change to work with right and left selectable elements
 	private void setSelectedTile(int x, int y)
 	{
@@ -305,8 +301,14 @@ public class Level extends DisplayScreen implements ActionListener {
 
 	}
 
-	
-//SET TILES	
+	/*
+	 * Requires a 2d array of Tiles("the map"), and an Integer array of coordinates.
+	 * createMapCoordinates should be called first to create the Tile coordinate array .
+	 * Sets the x and y positions of each Tile.
+	 * creates the clickDiamond for each Tile.
+	 * Sets the column and row number for each Tile.
+	 * Sets the standing point for each tile.
+	 */
 	private void setTiles(Tile[][] map, Integer[] arr) {
 		int arrGet = 0;
 		int rowNumber = 0;
@@ -321,14 +323,11 @@ public class Level extends DisplayScreen implements ActionListener {
 				map[row][column].setYpos(arr[arrGet+1].intValue()+1);
 				map[row][column].createClickDiamond(arr[arrGet].intValue(),arr[arrGet+1].intValue()+1);
 				map[row][column].getClickDiamond().invalidate();
-//				if(map[row][column].isClickable())
 				map[row][column].setColumnNumber(tileNumber);
 				map[row][column].setRowNumber(rowNumber);
 				map[row][column].setStandingPoints();
 				tileNumber++;
-//				System.out.println(map[row][column].getTileNumber());
-//				System.out.println(map[row][column].getXpos()+", "+map[row][column].getYpos());
-//				System.out.println();		
+	
 				arrGet+=2;
 			}	
 			rowNumber++;
@@ -336,10 +335,12 @@ public class Level extends DisplayScreen implements ActionListener {
 	}
 
 	
-
-	
-//CREATE SQUARE TILE	
-	private Integer[] squareTile(int screenSizeX,int screenSizeY,int length)
+	/*
+	 * createMapCoordinates returns an Integer array of coordinates based on the screen size and the length  of a map.
+	 * It is designed to return a diamond shaped map. If the 2d array is setup incorrectly the result will be unfavorable.
+	 */
+		
+	private Integer[] createMapCoordinates(int screenSizeX,int screenSizeY,int length)
 	{
 		int rectCross = length/2+1;
 		ArrayList<Integer> xy = new ArrayList<Integer>();
@@ -377,28 +378,25 @@ public class Level extends DisplayScreen implements ActionListener {
 		return xy.toArray(new Integer[xy.size()]);	
 	}
 	
-	public void setCharacterTileOn(Characters ch)
-	{
-		
-	}
-	
-//MoveClickTiles
-	private void moveClickTiles()
-	{
-		
-		for(int row = 0; row<mapLayer1.length;row++)
-		{	
-			for(int column=0;column<mapLayer1[row].length;column++)
-			{	
-				mapLayer1[row][column].moveClickDiamond(cameraX,cameraY);
-//				mapLayer1[row][column].getClickDiamond().invalidate();
-			}	
-		}
-		
 
-	}
 	
-//SET DRAW COLOR	
+	//Nonfunctional method. Work in progress to move the camera.
+//	private void moveClickTiles()
+//	{
+//		
+//		for(int row = 0; row<mapLayer1.length;row++)
+//		{	
+//			for(int column=0;column<mapLayer1[row].length;column++)
+//			{	
+//				mapLayer1[row][column].moveClickDiamond(cameraX,cameraY);
+////				mapLayer1[row][column].getClickDiamond().invalidate();
+//			}	
+//		}
+//		
+//
+//	}
+	
+	//Method to easily call custom highlight colors.
 	private Color setColor(int c)
 	{
 		
@@ -416,7 +414,7 @@ public class Level extends DisplayScreen implements ActionListener {
 	
 	
 	
-//PAINT	
+	//Draws the images on the screen.
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -437,11 +435,10 @@ public class Level extends DisplayScreen implements ActionListener {
 
 		drawStandingPoints(g);
 		
-//		Toolkit.getDefaultToolkit().sync();
 	}
-//END OF PAINT
+
 	
-	//draw map loops
+	// Draws a given map on the screen.
 	private void drawMap(Graphics g, Tile[][] map)
 	
 	{
@@ -455,12 +452,13 @@ public class Level extends DisplayScreen implements ActionListener {
 	}
 	
 	
-	//Draw highlights
+	/*
+	 * Checks if tiles are selected, highlighted or adjacent.
+	 * If true the tile is highlighted with a unique color.
+	 */
 	private void drawHighlights(Graphics g)
-	{
-		
-		
-		moveClickTiles();
+	{				
+//		moveClickTiles();
 		for(int row = 0; row<mapLayer1.length;row++)
 		{	
 			for(int column=0;column<mapLayer1[row].length;column++)
@@ -488,17 +486,19 @@ public class Level extends DisplayScreen implements ActionListener {
 	}
 
 	
-//Characters
+	//Draws the characters.
 	private void drawCharacters(Graphics g)
 	{
 		g.drawImage(player.getSprite(),player.getxPos()+cameraX,player.getyPos(),null);
 	}
 	
+	//Draws the bottom menu.
 	private void drawBottomMenu(Graphics g)
 	{
 		g.drawImage(bottomMenu.getBase(),0, windowY-225,null);
 	}
 	
+	//Draws the background with a loop.
 	private void drawBG(Graphics g)
 	{
 		for(int i = -600; i<1320;i+=300)
@@ -510,7 +510,7 @@ public class Level extends DisplayScreen implements ActionListener {
 		}
 	}
 	
-//StandingPoints
+	//Draw the standing/travel points.
 	private void drawStandingPoints(Graphics g)
 	{
 		g.setColor(setColor(2));
@@ -520,11 +520,13 @@ public class Level extends DisplayScreen implements ActionListener {
 		}
 	}
 
+	
+	//For timer. Want to replace with thread loop.
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
 		
-		
+	//not working correctly	
 //		if(player.isMoving()&&rightSelected instanceof Tile)
 //		{
 //			

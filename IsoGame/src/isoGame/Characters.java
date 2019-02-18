@@ -39,10 +39,9 @@ public class Characters extends JPanel implements Selectable, ActionListener {
 	private Tile tileOn,tileDestination;
 	private Direction cFacing = Direction.S;
 	private MapAnalyzer mapAnalyzer;
-	private Level currentLevel;
 	Timer timer;
 	
-	public Characters(Dimension screen,Tile tileOn,int set, int idNum, MapAnalyzer ma,Level level)
+	public Characters(Dimension screen,Tile tileOn,int set, int idNum, MapAnalyzer ma)
 	{
 		this.tileOn = tileOn;
 		changeTile(tileOn);
@@ -53,7 +52,6 @@ public class Characters extends JPanel implements Selectable, ActionListener {
 //		setRequestFocusEnabled(false);
 		setOpaque(false);
 		this.setPreferredSize(screen);
-		currentLevel = level;
 		timer = new Timer(33, this);
         timer.start();    
 	}
@@ -136,7 +134,7 @@ public class Characters extends JPanel implements Selectable, ActionListener {
 		xPos = newStandingPoint.x;
 		yPos = newStandingPoint.y;
 		updateStandingPoint(newStandingPoint);
-		Tile possibleTileOn = currentLevel.getPointedTile(standingPoint);
+		Tile possibleTileOn = mapAnalyzer.getPointedTile(standingPoint);
 		if(!possibleTileOn.equals(null))
 		{
 			tileOn = possibleTileOn;
