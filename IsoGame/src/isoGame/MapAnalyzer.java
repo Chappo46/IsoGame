@@ -36,10 +36,11 @@ public class MapAnalyzer {
 		this.map = map;
 		setAdjacentTiles();
 		setTravelPoints();
+		createOccupiedBooleans();
 	}
 	
 	/*
-	 * Takes all the tiles in a map and adds an array of possible coordinates of all of the adjacent tiles.
+	 * Takes all the tiles in a map and adds an array of possible coordinates(int x,y) of all of the adjacent tiles.
 	 * Also adds coordinates of tiles that may not exist if the selected tile is on the edge of the map.
 	 */
 	private void setAdjacentTiles()
@@ -254,6 +255,24 @@ public class MapAnalyzer {
 		}
 	}
 	
+	/**
+	 * Returns true if the specified point is occupied.
+	 * @param p Point in question.
+	 */
+	public boolean isPointOccupied(Point p)
+	{
+		return pointOccupied[travelPoints.indexOf(p)];	
+	}
+	
+	/**
+	 * Sets a specified point either true or false;
+	 * @param p Point in question.
+	 * @param b True or false.
+	 */
+	public void setPointOccupied(Point p,boolean b)
+	{
+		pointOccupied[travelPoints.indexOf(p)] = b;
+	}
 	
 	/*
 	 * given a point it returns the tile that that point is on.
