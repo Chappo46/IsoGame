@@ -14,6 +14,7 @@ public class IsoGame extends JFrame {
 	private int windowX = 1280;
 	private int windowY = 720;
 	private Dimension screen;
+	public static Console console;
 
 	/**
 	 * Launch the application.
@@ -45,11 +46,14 @@ public class IsoGame extends JFrame {
 		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
+		
+		console = new Console();
 	
 		screen = new Dimension(windowX,windowY);
 		
-		Level level1 = new Level(screen,3);
+		Level level1 = new Level(screen,1);
 		contentPane.add(level1);
+		console.printConsole();
 	}
 
 }

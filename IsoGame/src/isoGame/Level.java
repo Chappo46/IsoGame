@@ -100,6 +100,7 @@ public class Level extends DisplayScreen implements ActionListener {
 		this.windowX = screen.width;
 		this.windowY = screen.height;
 		initLevel();
+		IsoGame.console.cAction("Entered level: " + levelNum);
 	}
 	
 	/*
